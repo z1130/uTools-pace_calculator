@@ -1,0 +1,13 @@
+.el-input-number {
+  width: 100% !important;
+}
+
+.el-dialog__header {
+  display: none !important;
+}
+.el-dialog__body {
+  padding: 25px !important;
+}
+.el-dialog__footer {
+  padding: 0 20px 20px 20px !important;
+}

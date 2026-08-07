@@ -1,0 +1,19 @@
+{
+    "logo": "logo.png",
+    "main": "index.html",
+    "pluginSetting": {
+        "single": false
+    },
+    "features": [
+        {
+            "code": "跑步配速计算器",
+            "explain": "跑步必备配速计算器",
+            "cmds": [
+                "run",
+                "跑步",
+                "配速",
+                "马拉松"
+            ]
+        }
+    ]
+}

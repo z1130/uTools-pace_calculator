@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    // 在compilerOptions中添加2个属性
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}
