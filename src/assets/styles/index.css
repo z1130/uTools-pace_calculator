@@ -1,6 +1,4 @@
-@import url('reset.css');
 @import url('tailwind.css');
-@import url('elementCustom.css');
 
 * {
   font-family: PingFang SC, open sans, Helvetica Neue, Helvetica, Arial,
@@ -8,11 +6,89 @@
   box-sizing: border-box;
 }
 
+/* uTools 窗口偏宽，根字号放大一档，rem 布局与字号同步缩放 */
+html {
+  font-size: 17px;
+  scrollbar-width: none;
+}
+
 html,
 body {
   height: 100%;
 }
 
+/* 保留滚动但隐藏滚动条：Chromium(uTools) 走伪元素，Firefox 走 scrollbar-width */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== 主题色板：全项目唯一颜色来源 =====
+   红色跑道主题：浅色取铁红（暴晒后的旧跑道），深色取砖红（新铺跑道），
+   对应真实跑道的两种状态；深色下红色做文字太暗，故文字提亮一档 */
+:root {
+  --c-brand: #b7410e; /* 主色（填充）：铁红——中国田径场最常见面层色 */
+  --c-brand-rgb: 183 65 14; /* 主色 RGB 通道：uTools 旧内核不支持 color-mix，用 rgb(var() / alpha) 调透明度 */
+  --c-brand-text: #b7410e; /* 主色（文字）：浅色版填充文字同档，对比度 5.5:1 */
+  --c-brand-50: #f6e7de; /* 主色的高亮底色（下拉悬停等） */
+  --c-bg: #f2ede6; /* 页面背景：暖米白（晒过的沙土） */
+  --c-card: #ffffff; /* 卡片背景 */
+  --c-pop: #ffffff; /* 浮层背景（弹窗）：浅色与卡片同色，靠阴影分层 */
+  --c-line: #e8e0d8; /* 卡片边框、表格分割线（浅暖灰） */
+  --c-field: #faf7f2; /* 输入框/下拉框背景 */
+  --c-fieldline: #d9d3cc; /* 输入框默认边框 */
+  --c-ink: #2c241b; /* 主文字：深褐黑 */
+  --c-mute: #8a827d; /* 次要文字：暖灰 */
+  --c-btn2: #4a4a4a; /* 次按钮（重置）底色 */
+  --c-btn2-text: #ffffff; /* 次按钮文字 */
+}
+.dark {
+  --c-brand: #c23b22; /* 砖红填充：新铺跑道标准色（只做填充，不做小字） */
+  --c-brand-rgb: 194 59 34;
+  --c-brand-text: #e86a48; /* 砖红文字：提亮一档，小字对比度约 5.3:1 */
+  --c-brand-50: rgb(194 59 34 / 0.14);
+  --c-bg: #121010; /* 带红调的沥青暖黑 */
+  --c-card: #1c1818;
+  --c-pop: #262020; /* 浮层比卡片亮一档，深色下靠明度分层 */
+  --c-line: #2e2828;
+  --c-field: #161212;
+  --c-fieldline: #3a3232;
+  --c-ink: #f0ebe3; /* 暖白，像跑道白线 */
+  --c-mute: #8a827d;
+  --c-btn2: #3a3232;
+  --c-btn2-text: #f0ebe3;
+}
+
+/* 键盘焦点样式：去掉 Chromium 默认金框，改主题色细环
+   用 box-shadow 而非 outline——uTools 旧内核 outline 不跟随 border-radius
+   :focus-visible 仅键盘 Tab 触发，鼠标点击不显示 */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  /* 双层环：内圈卡片色留出间隙，外圈才是焦点色——焦点色与按钮同底时依然可见 */
+  box-shadow:
+    0 0 0 2px var(--c-card),
+    0 0 0 4px var(--c-brand);
+}
+
+/* 按钮（含页签）禁止文字选中：点击时的轻微拖动不应触发选中态；
+   结果表格保持可选中，方便复制成绩 */
+button {
+  user-select: none;
+}
+
+/* 页面背景由变量接管，深浅切换随 .dark 自动完成 */
+body {
+  background: var(--c-bg);
+}
+
 .app-container {
   padding: 15px;
+}
+
+/* 移动端：输入框字号提到 16px，避免 iOS Safari 聚焦时自动放大页面 */
+@media (max-width: 640px) {
+  .control-box input {
+    font-size: 16px;
+  }
 }
