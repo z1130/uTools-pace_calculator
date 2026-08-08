@@ -53,15 +53,27 @@
 
       <!-- 时长 -->
       <div class="mb-3 flex gap-2" :class="{ 'solved-group': solvedGroup === 'time' }">
-        <FloatField label="时长 (hh:mm:ss)" :has-value="timeTotal != null">
-          <DurationInput v-model="timeTotal" :segments="3" />
+        <FloatField label="时长 (hh:mm:ss)" :has-value="timeTotal != null || timeInvalid">
+          <DurationInput
+            :key="'time' + formKey"
+            ref="timeInput"
+            v-model="timeTotal"
+            v-model:invalid="timeInvalid"
+            :segments="3"
+          />
         </FloatField>
       </div>
 
       <!-- 配速 -->
       <div class="mb-4 flex gap-2" :class="{ 'solved-group': solvedGroup === 'pace' }">
-        <FloatField label="配速 (mm:ss)" :has-value="paceTotal != null">
-          <DurationInput v-model="paceTotal" :segments="2" />
+        <FloatField label="配速 (mm:ss)" :has-value="paceTotal != null || paceInvalid">
+          <DurationInput
+            :key="'pace' + formKey"
+            ref="paceInput"
+            v-model="paceTotal"
+            v-model:invalid="paceInvalid"
+            :segments="2"
+          />
         </FloatField>
       </div>
 
@@ -272,6 +284,15 @@ const distance = reactive({ dis_value: null, dis_type: null, dis_unit: 'km' })
 // DurationInput 的 v-model 就是总秒数，直接存总秒数，不再另维护时/分/秒分段
 const timeTotal = ref(null)
 const paceTotal = ref(null)
+// 非法输入标记（DurationInput 的 v-model:invalid）：非法时总秒数为 null，
+// 但原文保留在框内，浮动标签要靠它维持上浮
+const timeInvalid = ref(false)
+const paceInvalid = ref(false)
+// 两个时长框的组件引用：点计算被非法输入拦下时调 shake() 抖动对应字段
+const timeInput = ref(null)
+const paceInput = ref(null)
+// 重置时换 key 强制重建两个时长框：非法输入的红框/原文快照在组件内部，换 key 回到初始态
+const formKey = ref(0)
 
 // 自定义距离输入框的代理：按当前单位做 公里↔米 换算
 const customDistance = computed({
@@ -289,6 +310,14 @@ const customDistance = computed({
 
 // 计算：自动找出唯一未填的项并求解，节流 1s 内只能触发一次
 const calculate = useThrottleFn(() => {
+  // 非法输入（值已按未填处理）优先单独拦：抖动对应字段作动作反馈，
+  // 文字说明由框下常驻小字承担，不再弹 toast 重复一遍
+  if (timeInvalid.value || paceInvalid.value) {
+    if (timeInvalid.value) timeInput.value?.shake()
+    if (paceInvalid.value) paceInput.value?.shake()
+    return
+  }
+
   const distKm = distance.dis_value
   const totalSec = timeTotal.value ?? 0
   const paceSec = paceTotal.value ?? 0
@@ -361,6 +390,9 @@ const reset = () => {
   Object.assign(distance, { dis_value: null, dis_type: null, dis_unit: 'km' })
   timeTotal.value = null
   paceTotal.value = null
+  timeInvalid.value = false
+  paceInvalid.value = false
+  formKey.value++
   solvedGroup.value = null
   raceSplits.value = null
   vdotData.value = null

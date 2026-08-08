@@ -49,8 +49,14 @@ jobs:
         run: |
           cd dist && zip -r "../pace-calculator-${{ github.ref_name }}.zip" . && cd ..
 
+      # 取当前 tag 指向 commit 的完整 message 作为 release notes
+      - name: Generate release notes
+        if: startsWith(github.ref, 'refs/tags/')
+        run: git log -1 --pretty=%B > release_notes.md
+
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: pace-calculator-${{ github.ref_name }}.zip
+          body_path: release_notes.md

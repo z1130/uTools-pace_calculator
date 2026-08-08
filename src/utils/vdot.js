@@ -66,17 +66,21 @@ const EQUIVALENT_DISTANCES = [
 const pad2 = (n) => String(n ?? 0).padStart(2, '0')
 
 // 秒 → h:mm:ss / m:ss
+// 先整体取整再拆分：直接对 %60 的余数取整会得到 60 秒（59.6 → 60），不进位
 const formatTime = (totalSec) => {
-  const h = Math.floor(totalSec / 3600)
-  const m = Math.floor((totalSec % 3600) / 60)
-  const s = Math.round(totalSec % 60)
+  const total = Math.round(totalSec)
+  const h = Math.floor(total / 3600)
+  const m = Math.floor((total % 3600) / 60)
+  const s = total % 60
   return h > 0 ? `${h}:${pad2(m)}:${pad2(s)}` : `${m}:${pad2(s)}`
 }
 
 // 秒 → m:ss.d（分段用，带一位小数，如 8:02.8）
+// 与 formatTime 同理，先按 0.1s 精度取整再拆，避免 59.96 → 60.0
 const formatSplit = (sec) => {
-  const m = Math.floor(sec / 60)
-  const s = (sec % 60).toFixed(1)
+  const total = Math.round(sec * 10) / 10
+  const m = Math.floor(total / 60)
+  const s = (total % 60).toFixed(1)
   return `${m}:${s.padStart(4, '0')}`
 }
 

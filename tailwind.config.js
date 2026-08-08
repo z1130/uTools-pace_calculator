@@ -20,6 +20,7 @@ export default {
         mute: 'var(--c-mute)',
         btn2: 'var(--c-btn2)',
         btn2text: 'var(--c-btn2-text)',
+        danger: 'var(--c-danger)', // 非法输入的文字/提示
       },
     },
   },
